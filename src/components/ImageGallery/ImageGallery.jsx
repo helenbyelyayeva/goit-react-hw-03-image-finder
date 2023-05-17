@@ -7,6 +7,7 @@ export class ImageGallery extends Component {
     render() {
         const { items, onSelect } = this.props;
         return (
+            <div className={css.container}>
             <ul className={css.gallery}>
                 {items.map(({ id, webformatURL, tags, largeImageURL }) => (
                     <ImageGalleryItem
@@ -18,11 +19,22 @@ export class ImageGallery extends Component {
                     />
                 ))}
             </ul>
+        </div>
         );
     }
 };
 
 
 ImageGallery.propTypes = {
-    items: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number.isRequired })),
+    items: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        webformatURL: PropTypes.string,
+        tags: PropTypes.string,
+        largeImageURL: PropTypes.string,
+        onSelect: PropTypes.func,
+    })),
+    onSelect: PropTypes.func,
 };
+
+
+

@@ -1,12 +1,13 @@
 import React from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css";
+import { scrollToBottom } from './Info/Scroll';
 import { Searchbar } from './SearchBar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
-import { fetchImages } from './Api/Api';
+import { fetchImages } from './Info/Api';
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 export class App extends React.Component {
   state = {
@@ -15,6 +16,7 @@ export class App extends React.Component {
     items: [],
     loading: false,
     largeImageUrl: '',
+    error: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -24,23 +26,26 @@ export class App extends React.Component {
     }
   }
 
-  getImages = async (im, page) => {
+  getImages = async (search, page) => {
     this.setState({ loading: true });
-    if (!im) {
+    if (!search) {
       return;
-    } const { hits, totalHits } = await fetchImages(im, page);
-    if (im.length === 0 || totalHits === 0) {
-      toast.error('Nothing was found :(');
+    } try {
+      const { hits, totalHits } = await fetchImages(search, page);
+      if (search.length === 0 || totalHits === 0) {
+        toast.error('Nothing was found :(');
+        return;
+      } else if (page === 1) {
+        toast.success(`${totalHits} images were found`);
+      }
+      this.setState(prevState => ({
+        items: [...prevState.items, ...hits],
+      }));
+    } catch (error) {
+      this.setState({ error });
+    } finally {
       this.setState({ loading: false });
-      return;
-    } else if (page === 1) {
-      toast.success(`${totalHits} images were found`);
     }
-
-    this.setState(prevState => ({
-      items: [...prevState.items, ...hits],
-      loading: false,
-    }));
   }
 
   handleFormSubmit = query => {
@@ -49,10 +54,11 @@ export class App extends React.Component {
 
   loadMore = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));
+    scrollToBottom();
   };
 
-  openModal = link => {
-    this.setState({ largeImageUrl: link });
+  openModal = largeImageUrl => {
+    this.setState({ largeImageUrl: largeImageUrl });
   };
 
   onCloseModal = () => {
@@ -60,12 +66,12 @@ export class App extends React.Component {
   };
 
   render() {
-    const {loading, items, largeImageUrl } = this.state;
-
+    const { error, page, loading, items, largeImageUrl } = this.state;
     return (
       <>
+        {error && <p>Whoops, something went wrong: {error.message}</p>}
         <Searchbar onSubmit={this.handleFormSubmit} />
-        {loading ? (
+        {loading && page === 1 ? (
           <Loader />
         ) : (
           <ImageGallery items={items} onSelect={this.openModal} />

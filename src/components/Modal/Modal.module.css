@@ -11,7 +11,7 @@
     z-index: 1200;
   }
   
-  .modal {
+  .modal{
     max-width: calc(100vw - 60px);
     max-height: calc(100vh - 30px);
   }

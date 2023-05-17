@@ -5,7 +5,7 @@ import css from "./ImageGalleryItem.module.css";
 export const ImageGalleryItem = ({ webformatURL, alt, largeImageURL, onSelect}) => {
   return (
    <li onClick={() => onSelect(largeImageURL)} className={css.photo_card} >
-      <img
+      <img className={css.photo}
         src={webformatURL}
         alt={alt}
       />

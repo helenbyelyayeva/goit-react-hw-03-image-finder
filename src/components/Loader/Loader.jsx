@@ -9,8 +9,8 @@ export class Loader extends Component {
         <ColorRing
           type="Puff"
           color="#47acce"
-          height={400}
-          width={400}
+          height={350}
+          width={350}
           timeout={3000}
         />
       </div>
