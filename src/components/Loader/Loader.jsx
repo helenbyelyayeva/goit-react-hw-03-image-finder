@@ -3,16 +3,17 @@ import { ColorRing } from 'react-loader-spinner';
 import css from './Loader.module.css';
 
 export class Loader extends Component {
-    render() {
-      return (
+  render() {
+    return (
+      <div className={css.loader}>
         <ColorRing
-          className={css.loader}
           type="Puff"
           color="#47acce"
-          height={500}
-          width={500}
+          height={400}
+          width={400}
           timeout={3000}
         />
-      );
-    }
+      </div>
+    );
   }
+}

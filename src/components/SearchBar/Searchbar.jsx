@@ -2,6 +2,8 @@ import propTypes from 'prop-types';
 import { Component } from 'react';
 import css from "./Searchbar.module.css";
 import { FaSearch } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 
 
@@ -17,7 +19,8 @@ export class Searchbar extends Component {
     handleSubmit = e => {
         e.preventDefault();
         if (this.state.query.trim() === '') {
-            return alert('Enter data for search');
+            toast.error('Please enter some data');
+            return;
         }
         this.props.onSubmit(this.state.query);
         this.setState({ query: '' });
@@ -43,6 +46,7 @@ export class Searchbar extends Component {
                         placeholder="Search images and photo..."
                     />
                 </form>
+                <ToastContainer autoClose={2000} />
             </header>
         );
     }

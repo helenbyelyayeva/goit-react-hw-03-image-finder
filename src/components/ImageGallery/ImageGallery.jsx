@@ -23,8 +23,6 @@ export class ImageGallery extends Component {
 };
 
 
-
-
 ImageGallery.propTypes = {
     items: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number.isRequired })),
 };
