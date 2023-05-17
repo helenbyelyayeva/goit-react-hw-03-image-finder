@@ -1,11 +1,12 @@
 import React from 'react';
-import { toast } from 'react-toastify';
+// import { ToastContainer} from 'react-toastify';
+// import { toast } from 'react-toastify';
 import { Searchbar } from './SearchBar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
-import API from './Api/Api';
+import {fetchImages} from './Api/Api';
 
 export class App extends React.Component {
   state = {
@@ -14,47 +15,49 @@ export class App extends React.Component {
     items: [],
     per_page: 12,
     loading: false,
-    error: null,
     largeImageUrl: '',
     error: null,
   };
 
-
   componentDidUpdate(prevProps, prevState) {
     const { query, page } = this.state;
     if (prevState.query !== query || prevState.page !== page) {
-
-      this.setState({ loading: true });
-      try {
-        API.fetchImage(query, page)
-          .then(items => {
-            const { hits } = items;
-            this.setState(() => ({
-              items: [...prevState.items, ...hits]
-            }));
-
-          })
-      } catch (error) {
-        this.setState({ error: error.message });
-      } finally {
-        this.setState({ loading: false });
-      }
+      this.getImages(query, page);
     }
   }
-
-  handleFormSubmit = query => {
-    if (query !== this.state.query) {
-      this.setState({ query, page: 1 });
-      this.setState({ items: [] })
-      toast.success(`We found it for you ${query}`)
+  getImages = async (im, page) => {
+    this.setState({ loading: true });
+    if (!im) {
       return;
     }
-    else {
-      toast.info(`Sorry image ${query} not found`, {
-      });
+    try {
+      const { hits } = await fetchImages(im, page);
+      this.setState(prevState => ({
+        items: [...prevState.items, ...hits],
+        // loadMore: this.state.page < Math.ceil(totalHits / this.state.per_page),
+      }));
+    } catch (error) {
+      this.setState({ error: error.message });
+    } finally {
+      this.setState({ loading: false });
     }
-
   };
+  handleFormSubmit = query => {
+    this.setState({ query, page: 1, items: [] });
+  };
+  // handleFormSubmit = query => {
+  //   if (query !== this.state.query) {
+  //     this.setState({ query, page: 1 });
+  //     this.setState({ items: [] })
+  //     toast.success(`We found it for you ${query}`)
+  //     return;
+  //   }
+  //   else {
+  //     toast.info(`Sorry image ${query} not found`, {
+  //     });
+  //   }
+
+  // };
 
   loadMore = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));
@@ -68,12 +71,12 @@ export class App extends React.Component {
     this.setState({ largeImageUrl: '' });
   };
   render() {
-    const { error, status, items, largeImageUrl } = this.state;
+    const {  status, items, largeImageUrl } = this.state;
 
     return (
       <>
         <Searchbar onSubmit={this.handleFormSubmit} />
-        {status === 'idle' && (
+        {/* {status === 'idle' && (
           <div>
             <h2>Please, enter query</h2>
           </div>
@@ -82,10 +85,10 @@ export class App extends React.Component {
           <div>
             <h2>{error.message}</h2>
           </div>
-        )}
-        {items.length > 0 && (
+        )} */}
+        {/* {items.length > 0 && ( */}
           <ImageGallery items={items} onSelect={this.openModal} />
-        )}
+    /
         {items.length > 11 && <Button onLoadMore={this.loadMore} />}
         {status === 'pending' && (
           <Loader />
@@ -94,6 +97,7 @@ export class App extends React.Component {
         {largeImageUrl.length > 0 && (
           <Modal url={largeImageUrl} onClose={this.onCloseModal} />
         )}
+      {/* <ToastContainer autoClose={2000}/> */}
         {/* {status === 'idle' && (
           <div>
             <h2>Please, enter query</h2>
