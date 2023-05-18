@@ -17,6 +17,8 @@ export class App extends React.Component {
     loading: false,
     largeImageUrl: '',
     error: null,
+    isButtonVisible: false,
+    per_page: 12
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -31,6 +33,7 @@ export class App extends React.Component {
     if (!search) {
       return;
     } try {
+      const { page, per_page } = this.state;
       const { hits, totalHits } = await fetchImages(search, page);
       if (search.length === 0 || totalHits === 0) {
         toast.error('Nothing was found :(');
@@ -40,6 +43,7 @@ export class App extends React.Component {
       }
       this.setState(prevState => ({
         items: [...prevState.items, ...hits],
+        isButtonVisible: page < Math.ceil(totalHits / per_page),
       }));
     } catch (error) {
       this.setState({ error });
@@ -66,7 +70,7 @@ export class App extends React.Component {
   };
 
   render() {
-    const { error, page, loading, items, largeImageUrl } = this.state;
+    const { error, page, loading, items, largeImageUrl, isButtonVisible } = this.state;
     return (
       <>
         {error && <p>Whoops, something went wrong: {error.message}</p>}
@@ -76,7 +80,7 @@ export class App extends React.Component {
         ) : (
           <ImageGallery items={items} onSelect={this.openModal} />
         )}
-        {items.length >= 12 && <Button onLoadMore={this.loadMore} />}
+        {isButtonVisible && <Button onLoadMore={this.loadMore} />}
         {largeImageUrl.length > 0 && (
           <Modal url={largeImageUrl} onClose={this.onCloseModal} />
         )}
