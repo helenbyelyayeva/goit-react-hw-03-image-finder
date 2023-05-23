@@ -1,20 +1,23 @@
 .load_more {
+    display: block;
     width: 200px;
     height: 40px;
     margin-bottom: 30px;
-    margin-left: 50%;
-    transform: translateX(-50%);
+    margin-left: auto;
+    margin-right: auto;
     font-size: 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 300ms linear, color 300ms linear;
+    transition: background-color linear, color linear;
+    transition: 500ms cubic-bezier(.4,0,.2,1);
 }
 
 .load_more:hover,
 .load_more:focus {
     background-color: #6495ED;
     color: #ffffff;
+    transform: scale(1.05);
 }
 
 .load_more.is-hidden {

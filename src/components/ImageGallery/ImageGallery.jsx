@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 import css from "./ImageGallery.module.css";
-import { Component } from 'react';
 
-export class ImageGallery extends Component {
-    render() {
-        const { items, onSelect } = this.props;
-        return (
-            <div className={css.container}>
+
+export const ImageGallery = ({ items, onSelect } ) => {
+    return (
+        <div className={css.container}>
             <ul className={css.gallery}>
                 {items.map(({ id, webformatURL, tags, largeImageURL }) => (
                     <ImageGalleryItem
@@ -20,8 +18,7 @@ export class ImageGallery extends Component {
                 ))}
             </ul>
         </div>
-        );
-    }
+    );
 };
 
 
